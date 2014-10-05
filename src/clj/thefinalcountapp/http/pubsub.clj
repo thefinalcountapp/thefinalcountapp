@@ -32,7 +32,7 @@
 
 (defn subscribe [uid group]
   (swap! subscriptions (fn [subs]
-                         (update-in subs [uid] (fnil #(conj % group) #{})))))
+                         (update subs uid (fnil #(conj % group) #{})))))
 
 (defn subscribed? [uid group]
   (if-let [subs (@subscriptions uid)]
@@ -45,7 +45,7 @@
       (swap! subscriptions (fn [subs]
                              (dissoc subs uid)))
       (swap! subscriptions (fn [subs]
-                             (update-in subs [uid] #(disj % group)))))))
+                             (update subs uid #(disj % group)))))))
 
 
 ;; Notifications
