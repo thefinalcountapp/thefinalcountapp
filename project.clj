@@ -7,26 +7,26 @@
                  [org.clojure/clojurescript "0.0-2322"]
 
                  [org.clojure/core.async "0.1.338.0-5c5012-alpha"]
+                 [cats "0.2.0-SNAPSHOT" :exclusions [org.clojure/clojure]]
+                 [prismatic/schema "0.3.0"]
 
                  [http-kit "2.1.19"]
                  [compojure "1.1.9"]
                  [ring "1.3.1"]
                  [ring/ring-defaults "0.1.2"]
+                 [liberator "0.12.2"]
+                 [ring-transit "0.1.2"]
+                 [io.clojure/liberator-transit "0.3.0"]
                  [com.cognitect/transit-clj "0.8.247"]
                  [com.cognitect/transit-cljs "0.8.188"]
                  [com.taoensso/sente "1.1.0"]
-
-                 [com.stuartsierra/component "0.2.2"]
-                 [liberator "0.12.2"]
-                 [io.clojure/liberator-transit "0.3.0"]
                  [clj-time "0.8.0"]
 
-                 [cats "0.2.0-SNAPSHOT" :exclusions [org.clojure/clojure]]
+                 [com.stuartsierra/component "0.2.2"]
 
                  [reagent "0.4.2"]
                  [com.andrewmcveigh/cljs-time "0.2.0"]
-
-                 [prismatic/schema "0.3.0"]]
+                 ]
   :main thefinalcountapp.core
   :plugins [[lein-cljsbuild "1.0.3"]
             [com.keminglabs/cljx "0.4.0" :exclusions [org.clojure/clojure]]

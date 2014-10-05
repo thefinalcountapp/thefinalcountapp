@@ -1,23 +1,24 @@
 (ns thefinalcountapp.http.api
   (:require [compojure.core :refer [defroutes GET POST PUT ANY DELETE]]
             [com.stuartsierra.component :as component]
-            [cognitect.transit :as transit]
             [ring.middleware.defaults :as ring-defaults]
+            [ring.middleware.transit :refer [wrap-transit-body]]
+            [io.clojure.liberator-transit :as lt]
             [thefinalcountapp.time :as time]
             [thefinalcountapp.data.store :as store]
             [thefinalcountapp.data.schemas :as schemas]
             [thefinalcountapp.http.pubsub :as pubsub]
             [thefinalcountapp.utils :as utils]
             [schema.core :refer [check]]
-            [liberator.core :refer [defresource]]
-            [cognitect.transit :as transit]
-            [io.clojure.liberator-transit :as lt])
+            [liberator.core :refer [defresource]])
   (:import [org.joda.time DateTime]))
 
 ;; Resources
+(def transit-handlers {DateTime time/joda-time-writer})
+
 (def resource-defaults
   {:available-media-types ["application/transit+json"]
-   :as-response (lt/as-response {:handlers {DateTime time/joda-time-writer}})})
+   :as-response (lt/as-response {:handlers transit-handlers})})
 
 
 (defresource group-creation []
@@ -72,7 +73,7 @@
                    (store/group-exists? db group)))
   :post! (fn [ctx]
            (let [req (:request ctx)
-                 counter (transit/read (transit/reader (:body req) :json))
+                 counter (:body req)
                  db (::db req)
                  created-counter (store/create-counter db group counter)]
              (pubsub/notify :counter/created group {:group group :id (:id created-counter)})
@@ -92,7 +93,7 @@
                  (store/counter-exists? db group counter-id)))
   :put! (fn [ctx]
           (let [req (:request ctx)
-                counter (transit/read (transit/reader (:body req) :json))
+                counter (:body req)
                 db (::db req)
                 updated-counter (store/update-counter db group counter-id counter)]
             (pubsub/notify :counter/updated group {:group group :id counter-id})
@@ -172,8 +173,11 @@
 (defrecord API [db]
   component/Lifecycle
   (start [this]
-    (let [wrapped-api-routes (ring-defaults/wrap-defaults #'api-routes ring-defaults/api-defaults)]
-      (assoc this :routes (api-middleware wrapped-api-routes db))))
+    (let [wrapped-api-routes (-> #'api-routes
+                                 (wrap-transit-body {:encoding :json, :opts {:handlers transit-handlers}})
+                                 (ring-defaults/wrap-defaults ring-defaults/api-defaults)
+                                 (api-middleware db))]
+      (assoc this :routes wrapped-api-routes)))
 
   (stop [this]
     (dissoc this :routes)))
