@@ -29,13 +29,11 @@
                     {::parsed-entity body})))
   :authorized? (fn [ctx]
                  (let [group (::parsed-entity ctx)
-                       req (:request ctx)
-                       db (::db req)]
+                       {{db ::db} :request} ctx]
                    (not (store/group-exists? db (:name group)))))
   :post! (fn [ctx]
            (let [group (::parsed-entity ctx)
-                 req (:request ctx)
-                 db (::db req)]
+                 {{db ::db} :request} ctx]
              {::entity (store/create-group db (:name group))}))
   :post-redirect? false
   :new? false
@@ -48,12 +46,10 @@
   resource-defaults
   :allowed-methods [:get]
   :exists? (fn [ctx]
-             (let [req (:request ctx)
-                   db (::db req)]
+             (let [{{db ::db} :request} ctx]
                  (store/group-exists? db group)))
   :handle-ok (fn [ctx]
-               (let [req (:request ctx)
-                     db (::db req)]
+               (let [{{db ::db} :request} ctx]
                  (store/get-group db group))))
 
 
@@ -61,12 +57,10 @@
   resource-defaults
   :allowed-methods [:get]
   :exists? (fn [ctx]
-             (let [req (:request ctx)
-                   db (::db req)]
+             (let [{{db ::db} :request} ctx]
                  (store/counter-exists? db group counter-id)))
   :handle-ok (fn [ctx]
-               (let [req (:request ctx)
-                     db (::db req)]
+               (let [{{db ::db} :request} ctx]
                  (store/get-counter db group counter-id))))
 
 
@@ -74,14 +68,11 @@
   resource-defaults
   :allowed-methods [:post]
   :authorized? (fn [ctx]
-                 (let [req (:request ctx)
-                       db (::db req)]
+                 (let [{{db ::db} :request} ctx]
                    (store/group-exists? db group)))
-  ; FIXME: for some reason the body doesn't get converted from transit
   :post! (fn [ctx]
-           (let [counter (get-in ctx [:request :body])
-                 counter (transit/read (transit/reader counter :json))
-                 req (:request ctx)
+           (let [req (:request ctx)
+                 counter (transit/read (transit/reader (:body req) :json))
                  db (::db req)
                  created-counter (store/create-counter db group counter)]
              (pubsub/notify :counter/created group {:group group :id (:id created-counter)})
@@ -97,14 +88,11 @@
   resource-defaults
   :allowed-methods [:put]
   :exists? (fn [ctx]
-             (let [req (:request ctx)
-                   db (::db req)]
+             (let [{{db ::db} :request} ctx]
                  (store/counter-exists? db group counter-id)))
-  ; FIXME: for some reason the body doesn't get converted from transit
   :put! (fn [ctx]
-          (let [body (get-in ctx [:request :body])
-                counter (transit/read (transit/reader body :json))
-                req (:request ctx)
+          (let [req (:request ctx)
+                counter (transit/read (transit/reader (:body req) :json))
                 db (::db req)
                 updated-counter (store/update-counter db group counter-id counter)]
             (pubsub/notify :counter/updated group {:group group :id counter-id})
@@ -121,14 +109,12 @@
   resource-defaults
   :allowed-methods [:delete]
   :exists? (fn [ctx]
-             (let [req (:request ctx)
-                   db (::db req)]
-                 (store/counter-exists? db group counter-id)))
+             (let [{{db ::db} :request} ctx]
+               (store/counter-exists? db group counter-id)))
   :delete! (fn [ctx]
-             (let [req (:request ctx)
-                   db (::db req)]
-              (store/delete-counter db group counter-id)
-              (pubsub/notify :counter/deleted group {:group group :id counter-id}))))
+             (let [{{db ::db} :request} ctx]
+               (store/delete-counter db group counter-id)
+               (pubsub/notify :counter/deleted group {:group group :id counter-id}))))
 
 (defresource counter-increment [group counter-id]
   resource-defaults
