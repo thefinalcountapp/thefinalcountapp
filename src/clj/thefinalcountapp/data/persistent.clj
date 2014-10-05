@@ -67,9 +67,9 @@
     (j/with-connection [conn dbspec]
       (tx/with-transaction conn {:read-only true}
         (let [group-sql ["SELECT * FROM groups WHERE name = ?" name]
-              counters-sql ["SELECT * FROM counters JOIN groups AS g ON g.id = groupid WHERE g.name = ?" name]]
+              counters-sql ["SELECT c.id, data FROM counters AS c JOIN groups AS g ON g.id = c.groupid WHERE g.name = ?" name]]
           (when-let [g (j/query-first conn group-sql)]
-            (merge g {:counters (vec (j/query conn counters-sql))}))))))
+            (merge g {:counters (vec (map map->counter (j/query conn counters-sql)))}))))))
 
   (group-exists? [_ name]
     (j/with-connection [conn dbspec]

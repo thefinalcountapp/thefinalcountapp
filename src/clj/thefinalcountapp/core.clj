@@ -5,8 +5,11 @@
             [thefinalcountapp.http.pubsub :as pubsub]
             [thefinalcountapp.utils :as utils]
             [clj-time.core :as time]
-            [thefinalcountapp.data.memory :as memstore]
+            [thefinalcountapp.data.persistent :as perstore]
             [com.stuartsierra.component :as component]))
+
+(def dbspec {:subprotocol "postgresql"
+             :subname "//localhost:5432/thefinalcountapp"})
 
 (defonce initial-data {"kaleidos-team" {:counters [{:id (utils/uuid)
                                                     :color :red
@@ -31,7 +34,7 @@
 
 (defn make-system []
   (component/system-map
-    :db (memstore/in-memory-store initial-data)
+    :db (perstore/persistent-store dbspec)
     :api (component/using
           (api/map->API {})
           [:db])

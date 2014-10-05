@@ -24,7 +24,10 @@
          :style #js {"background-color" (color banner-colors)}}])
 
 (defn counter-form []
-  [:form {:on-submit (fn [e] (go (<! (http/post "/api/counters/kaleidos-team" @current-counter)) (set! (.-location js/window) "/")) false)}
+  [:form {:on-submit (fn [e] (go (<! (http/post "/api/counters/kaleidos-team"
+                                                (dissoc @current-counter :last-updated)))
+                                 (set! (.-location js/window) "/"))
+                       false)}
    [:select {:name "type" :on-change #(swap! current-counter assoc :type (-> % .-target .-value keyword))}
     [:option {:value "count-up"} "DAYS WITHOUT"]
     [:option {:value "streak"} "DAYS DOING"]
