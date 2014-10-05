@@ -1,16 +1,15 @@
 (ns thefinalcountapp.http.pubsub
-  (:import [java.util UUID])
   (:require [taoensso.sente :as sente]
             [compojure.core :refer [defroutes GET POST]]
+            [thefinalcountapp.utils :as utils]
             [clojure.core.async :as async :refer [go <! >! go-loop]]
             [ring.middleware.defaults]
             [com.stuartsierra.component :as component]))
 
-
 ;; Pubsub channel
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
               connected-uids]}
-      (sente/make-channel-socket! {:user-id-fn (fn [_] (UUID/randomUUID))})]
+      (sente/make-channel-socket! {:user-id-fn (fn [_] (utils/uuid))})]
   ;; Ring handlers
   (def ring-ajax-post                ajax-post-fn)
   (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
