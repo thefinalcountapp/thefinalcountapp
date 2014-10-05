@@ -8,6 +8,21 @@
 (def NewGroup
   {:name s/Str})
 
+(def Counter
+  {:type (s/enum :count-up
+                 :streak
+                 :counter)
+  :text s/Str
+  (s/optional-key :value) s/Int
+  (s/optional-key :last-updated) s/Inst})
+;   :color (s/enum :red
+;                  :pink
+;                  :blue
+;                  :purple
+;                  :yellow)
+;  (s/optional-key :public-reset) s/Bool
+;  (s/optional-key :public-plus) s/Bool})
+
 
 (def NewCounter
   {:type (s/enum :count-up

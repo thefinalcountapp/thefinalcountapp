@@ -24,4 +24,5 @@
 
 (defn test-all []
   (refresh)
-  (run-tests 'thefinalcountapp.memory-store-test))
+  (run-tests 'thefinalcountapp.memory-store-test
+             'thefinalcountapp.persitent-store-test))

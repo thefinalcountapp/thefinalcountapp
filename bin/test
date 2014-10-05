@@ -1,0 +1,8 @@
+#!/bin/sh
+
+createdb thefinalcountapp_test
+psql thefinalcountapp_test -f resources/private/create_tables.sql
+lein cljx once
+lein cljsbuild once
+lein test
+dropdb thefinalcountapp_test

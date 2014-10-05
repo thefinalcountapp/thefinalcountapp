@@ -21,6 +21,11 @@
                  [com.cognitect/transit-cljs "0.8.188"]
                  [com.taoensso/sente "1.1.0"]
                  [clj-time "0.8.0"]
+                 [cheshire "5.3.1"]
+
+                 [clojure.jdbc "0.2.2"]
+                 [clojure.jdbc/clojure.jdbc-dbcp "0.2.0"]
+                 [postgresql "9.3-1101.jdbc41"]
 
                  [com.stuartsierra/component "0.2.2"]
 
