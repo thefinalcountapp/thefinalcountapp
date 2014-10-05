@@ -9,5 +9,6 @@ CREATE TABLE groups (
 CREATE TABLE counters (
        id uuid primary key DEFAULT uuid_generate_v4(),
        groupid int references groups(id) not null,
-       data json
+       data json,
+       last_updated timestamp with time zone default current_timestamp
 );
