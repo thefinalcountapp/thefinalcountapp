@@ -18,8 +18,9 @@
        (is (not (store/group-exists? store name)))
        (store/create-group store name)
        (is (= group (select-keys (store/get-group store name) (keys group))))
-       (is (store/group-exists? store name))))
+       (is (store/group-exists? store name)))))
 
+(deftest counters
   (testing "A counter can be added to a group and retrieved"
     (let [store (make-store)
           name (str (gensym))
