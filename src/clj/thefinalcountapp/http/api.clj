@@ -7,6 +7,7 @@
             [thefinalcountapp.data.store :as store]
             [thefinalcountapp.data.schemas :as schemas]
             [thefinalcountapp.http.pubsub :as pubsub]
+            [thefinalcountapp.utils :as utils]
             [schema.core :refer [check]]
             [liberator.core :refer [defresource]]
             [cognitect.transit :as transit]
@@ -169,11 +170,11 @@
   (POST "/api/counters" [] (group-creation))
   (GET "/api/counters/:group" [group] (group-detail group))
   (POST "/api/counters/:group" [group] (counter-create group))
-  (GET "/api/counters/:group/:id" [group id] (counter-detail group (java.util.UUID/fromString id)))
-  (PUT "/api/counters/:group/:id" [group id] (counter-update group (java.util.UUID/fromString id)))
-  (POST "/api/counters/:group/:id/increment" [group id] (counter-increment group (java.util.UUID/fromString id)))
-  (POST "/api/counters/:group/:id/reset" [group id] (counter-reset group (java.util.UUID/fromString id)))
-  (DELETE "/api/counters/:group/:id" [group id] (counter-delete group (java.util.UUID/fromString id))))
+  (GET "/api/counters/:group/:id" [group id] (counter-detail group (utils/uuid id)))
+  (PUT "/api/counters/:group/:id" [group id] (counter-update group (utils/uuid id)))
+  (POST "/api/counters/:group/:id/increment" [group id] (counter-increment group (utils/uuid id)))
+  (POST "/api/counters/:group/:id/reset" [group id] (counter-reset group (utils/uuid id)))
+  (DELETE "/api/counters/:group/:id" [group id] (counter-delete group (utils/uuid id))))
 
 
 ;; Component
